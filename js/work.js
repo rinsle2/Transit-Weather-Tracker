@@ -5,21 +5,15 @@ var trainkey = "a84a005d40d24debb86f294dad996767"
 var buskey = "w4q9rYU3KH9nwjLszi2U2pBhc"
 var weatherkey = "33b276c7eacaa52ce3cb19f57f583ae1"
 //Initialize all the material components
-const topAppBarElement = document.querySelector('.mdc-top-app-bar');
-const topAppBar = new MDCTopAppBar(topAppBarElement);
 const drawer = MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
 
 //Grab all the data from the CTA Database ONCE except for arrival times
 //Check on navbar click, go to specific screen
-const listEl = document.querySelector('.mdc-drawer .mdc-list');
-const mainContentEl = document.querySelector('.main-content');
-
-listEl.addEventListener('click', (event) => {
-  drawer.open = false;
-});
-
-document.body.addEventListener('MDCDrawer:closed', () => {
-  mainContentEl.querySelector('input, button').focus();
+import {MDCTopAppBar} from "@material/top-app-bar";
+const topAppBar = MDCTopAppBar.attachTo(document.getElementById('app-bar'));
+topAppBar.setScrollTarget(document.getElementById('main-content'));
+topAppBar.listen('MDCTopAppBar:nav', () => {
+  drawer.open = !drawer.open;
 });
 //Display what is needed(endpoints should grab data programatically here/For Some Things)
 //

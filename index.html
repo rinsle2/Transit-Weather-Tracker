@@ -5,35 +5,89 @@
   <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
   <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body, html {
+      padding:0px;
+    }
+  </style>
 </head>
 
 <body>
   <!-- Nav bar for screens/Make a Home Screen -->
+  <header class="mdc-top-app-bar app-bar" id="app-bar">
+    <div class="mdc-top-app-bar__row">
+      <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+        <a href="#" class="demo-menu material-icons mdc-top-app-bar__navigation-icon">menu</a>
+        <span class="mdc-top-app-bar__title">Dismissible Drawer</span>
+      </section>
+    </div>
+  </header>
   <aside class="mdc-drawer mdc-drawer--modal">
     <div class="mdc-drawer__content">
       <nav class="mdc-list">
-        <a class="mdc-list-item mdc-list-item--activated" href="#" tabindex="0">Weather</a>
-        <a class="mdc-list-item mdc-list-item--activated" href="#" tabindex="1">Recent</a>
-        <a class="mdc-list-item mdc-list-item--activated" href="#" tabindex="2">List</a>
+        <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">inbox</i>
+          <span class="mdc-list-item__text">Inbox</span>
+        </a>
+        <a class="mdc-list-item" href="#">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">send</i>
+          <span class="mdc-list-item__text">Outgoing</span>
+        </a>
+        <a class="mdc-list-item" href="#">
+          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">drafts</i>
+          <span class="mdc-list-item__text">Drafts</span>
+        </a>
       </nav>
     </div>
   </aside>
-  <div class="mdc-drawer-frame-app-content">
-    <header class="mdc-top-app-bar drawer-top-app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-          <button class="mdc-icon-button material-icons mdc-top-app-bar__navigation-icon mdc-ripple-upgraded--unbounded mdc-ripple-upgraded" style="--mdc-ripple-fg-size:28px; --mdc-ripple-fg-scale:1.71429; --mdc-ripple-left:10px; --mdc-ripple-top:10px;">
-            menu
-          </button>
-          <span class="mdc-top-app-bar__title">Transit and Weather Tracker</span>
-        </section>
-      </div>
-    </header>
-  </div>
+
+  <div class="mdc-drawer-scrim"></div>
+  <div>Main Content</div>
   <!-- Content divs for6 zeet446yyyy the screens -->
   <!-- jQuery CDN, for doing stuff on clicks -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  <script src="js/work.js"></script>
+  <script>
+    var trainendpoint = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?key="
+    var busendpoint = "http://ctabustracker.com/bustime/api/v2/gettime?key="
+    var weatherendpoint = "http://api.openweathermap.org/data/2.5/weather?"
+    var trainkey = "a84a005d40d24debb86f294dad996767"
+    var buskey = "w4q9rYU3KH9nwjLszi2U2pBhc"
+    var weatherkey = "33b276c7eacaa52ce3cb19f57f583ae1"
+     //Initialize all the material components
+    const drawer = MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
+     //Grab all the data from the CTA Database ONCE except for arrival times
+     //Check on navbar click, go to specific screen
+    import MDCTopAppBar from "@material/top-app-bar";
+    const topAppBar = MDCTopAppBar.attachTo(document.getElementById('app-bar'));
+    topAppBar.setScrollTarget(document.getElementById('main-content'));
+    topAppBar.listen('MDCTopAppBar:nav', () = > {
+      drawer.open = !drawer.open;
+    });
+     //Display what is needed(endpoints should grab data programatically here/For Some Things)
+     //
+     //Home Screen: About the Application
+     //
+     //
+     //Weather Screen(May be moved later)
+     //Grab data from openweatherapi
+     //Display neatly using cards
+     //
+     //
+     //Recents and Favorites:
+     //Store favorite stations for easier viewing
+     //Store a list of recents up to 25 times ago
+     //
+     //
+     //Stations Screen:
+     //additional clicking/tapping on things would lead to more content
+     //Initial: List of all routes and train lines
+     // First Click: Show Direction(Can be cached for trains, not so much so for buses)
+     //  Second Click: Show stations/stops
+     //   Third Click: Show Time to Arrival(ONLY GRAB THIS AT THIS SCREEN)
+     //   Only once you hit time to arrival, Favorites Functionality will exist on the top right
+     // Cache the result in history for the recent screen
+     //
+  </script>
   <!-- Last thing in the file, because cacheing -->
   <script>
     if('serviceWorker' in navigator) {
