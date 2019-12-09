@@ -129,7 +129,6 @@
           $("#weather").append('<h6 class="mdc-typography--subtitle1">Current Weather is: ' + res.weather[0].main + '</h6>');
         })
       }
-    
     document.getElementById("location").addEventListener("click", function() {
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(currentWeather)
@@ -138,21 +137,21 @@
       }
     })
      let stations = document.getElementById("stations");
-     let routedir = $(".direction").clone()
+    let routedir = $(".direction").clone()
      let stop = $(".stops").clone()
      let arri = $(".arrivals").clone()
      let stopids = null
      stations.addEventListener("click", function() {
-        $(".routes").clear()
-       busRouteEnd = busRouteEnd + buskey + "&format=json"
-       $.get(busRouteEnd, function(res) {
-         $.each(res, function(i, v) {
-           let route = $(".line").clone()
-           route.removeClass("template")
-           route.text(res.bustime-response.routes[i].rt)
-           $(".routes").append(route)
-         })
-       })
+      $(".routes").clear()
+      busRouteEnd = busRouteEnd + buskey + "&format=json"
+      $.get(busRouteEnd, function(res) {
+        $.each(res, function(i, v) {
+          let route = $(".line").clone()
+          route.removeClass("template")
+          route.text(res.bustime - response.routes[i].rt)
+          $(".routes").append(route)
+        })
+      })
     })
      let lines = document.getElementsByClass("line");
     for(let j = 0; j < lines.length; j++) {
@@ -160,13 +159,13 @@
         routedir.removeClass("template")
         let target = $(this).text()
         $(".routes").clear()
-        busDirectionEnd = busDirectionEnd + buskey + "&rt="+ target + "&format=json"
+        busDirectionEnd = busDirectionEnd + buskey + "&rt=" + target + "&format=json"
         busStop = busStop + buskey + "&rt=" + target
         busPred = busPred + buskey + "&rt=" + target
         $.get(busDirectionEnd, function(res) {
           $.each(res, function(i, v) {
             let routedirT = routedir.clone()
-            routedirT.text(res.bustime-response.directions[i].dir)
+            routedirT.text(res.bustime - response.directions[i].dir)
             $(".routes").append(routedirT)
           })
         })
@@ -182,21 +181,21 @@
         $.get(busStop, function(res) {
           $.each(res, function(i, v) {
             let stops = stop.clone()
-            stopids.push(res.bustime-response.stops[i].stpid)
-            stops.text(res.bustime-response.stops[i].stpnm)
+            stopids.push(res.bustime - response.stops[i].stpid)
+            stops.text(res.bustime - response.stops[i].stpnm)
             $(".routes").append(stops)
           })
         })
       })
     }
     let st = document.getElementsByClass("stops")
-    for(let i=0;i<st.length;i++) {
+     for(let i = 0; i < st.length; i++) {
       st[i].addEventListener('click', function() {
         $(".routes").clear()
         arri.removeClass("template")
         busPred = busPred + "&stpid=" + stopids[i] + "&format=json"
         $.get(busPred, function(res) {
-          $.each(res, function(i,v) {
+          $.each(res, function(i, v) {
             actArri = arri.clone()
             actArri.text((v.schtm - v.tmstmp) + "Min")
             $(".routes").append(actArri)
@@ -206,6 +205,18 @@
     }
   </script>
 
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        // registration worked
+        console.log('Registration succeeded. Scope is ' + reg.scope);
+      }).
+      catch(function(error) {
+        // registration failed
+        console.log('Registration failed with ' + error);
+      });
+    }
+  </script>
 
 </body>
 

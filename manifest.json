@@ -1,0 +1,11 @@
+{
+  "name": "Bus + Weather Tracker",
+  "short_name": "Bus Tracker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "navy",
+  "description": "An app to check the bus times and the weather",
+  "icons": [{
+  }],
+  "related_applications": []
+}
