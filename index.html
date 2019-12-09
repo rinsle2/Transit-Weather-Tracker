@@ -178,6 +178,7 @@
         $(".routes").clear()
         stop.removeClass("template")
         busStop = busStop + "&dir=" + target + "&format=json"
+        busPred = busPred + "&dir=" + target
         $.get(busStop, function(res) {
           $.each(res, function(i, v) {
             let stops = stop.clone()
