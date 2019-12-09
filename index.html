@@ -60,11 +60,11 @@
 
   <div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust" id="content">
     <div class="content" id="weather">
-      <button class="mdc-button mdc-button--raised" id="location">  <span class="mdc-button__ripple"></span>Get Location</button>
-      
+      <button class="mdc-button mdc-button--raised" id="location"> <span class="mdc-button__ripple"></span>Get Location</button>
+
     </div>
     <div class="content" id="recent">
-      
+
     </div>
     <div class="content" id="stations">
       <ul class="routes mdc-list">
@@ -72,10 +72,12 @@
         </li>
         <li class="template mdc-list-item direction">
         </li>
-        <li class="template mdc-list-item arrival">
+        <li class="template mdc-list-item stops">
+        </li>
+        <li class="template mdc-list-item arrivals">
         </li>
       </ul>
-      
+
     </div>
   </div>
   <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
@@ -98,6 +100,7 @@
     document.getElementsByClassName("mdc-top-app-bar__navigation-icon")[0].addEventListener("click", function() {
       drawer.open = true;
     });
+
     function hideScreens() {
       $(".content").hide();
     }
@@ -112,57 +115,96 @@
       })
     };
     let corsanywhere = "https://cors-anywhere.herokuapp.com/"
-    var trainarrivalendpoint = corsanywhere + "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx?outputType=JSON&key="
-    var trainlocationendpoint = corsanywhere + "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx?outputType=JSON&key="
-    var weatherendpoint = corsanywhere +"http://api.openweathermap.org/data/2.5/weather?lat="
-    var trainkey = "a84a005d40d24debb86f294dad996767"
+    let busRouteEnd = corsanywhere + "http://ctabustracker.com/bustime/api/v2/getroutes?key="
+    let busDirectionEnd = corsanywhere + "http://ctabustracker.com/bustime/api/v2/getdirections?key="
+    let busStop = corsanywhere + "http://ctabustracker.com/bustime/api/v2/getstops?key="
+    let busPred = corsanywhere + "http://www.ctabustracker.com/bustime/api/v2/getpredictions?key="
+    var weatherendpoint = corsanywhere + "http://api.openweathermap.org/data/2.5/weather?lat="
+    var buskey = "w4q9rYU3KH9nwjLszi2U2pBhc"
     var weatherkey = "33b276c7eacaa52ce3cb19f57f583ae1"
-    function currentWeather(position) {
-      weatherendpoint = weatherendpoint + position.coords.latitude + "&lon=" + position.coords.longitude + "&appid=" + weatherkey;
-      $.get(weatherendpoint, function(res) {
-        
-       $("#weather").append('<h6 class="mdc-typography--subtitle1">Current Weather is: '+ res.weather[0].main + '</h6>');
-      })
-    }
-    function getstations(res) {
-      $.each(res, function(i, v) {
-        
-      })
-    }
+
+      function currentWeather(position) {
+        weatherendpoint = weatherendpoint + position.coords.latitude + "&lon=" + position.coords.longitude + "&appid=" + weatherkey;
+        $.get(weatherendpoint, function(res) {
+          $("#weather").append('<h6 class="mdc-typography--subtitle1">Current Weather is: ' + res.weather[0].main + '</h6>');
+        })
+      }
+    
     document.getElementById("location").addEventListener("click", function() {
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(currentWeather)
-      }
-      else {
+      } else {
         $("#weather").append("<div><div id=\"alert-dialog\" class=\"mdc-dialog\" role=\"alertdialog\" aria-modal=\"true\" aria-describedby=\"alert-dialog-description\"><div class=\"mdc-dialog__scrim\"></div><div class=\"mdc-dialog__container\"><div class=\"mdc-dialog__surface\"><section id=\"alert-dialog-description\" class=\"mdc-dialog__content\"><p>Location Not Available, Try again?</p></section><footer class=\"mdc-dialog__actions\"><button type=\"button\" class=\"mdc-button mdc-dialog__button mdc-ripple-upgraded\" data-mdc-dialog-action=\"close\">Cancel</button><button type=\"button\" class=\"mdc-button mdc-dialog__button mdc-ripple-upgraded\" data-mdc-dialog-action=\"accept\">Try Again</button></footer></div></div></div></div>")
       }
     })
-    let stations = document.getElementById("stations");
-    let routes = ["Red Line", "Blue Line", "Green Line", "Purple Line", "Pink Line", "Brown Line", "Yellow Line", "Brown Line"]
-    
-    stations.addEventListener("click", function() {
-      for(let i =0;i<routes.length;i++) {
-        let nextRoute = $(".line").clone()
-        nextRoute.text(routes[i])
-        $(".routes").append(nextRoute)
-      }
+     let stations = document.getElementById("stations");
+     let routedir = $(".direction").clone()
+     let stop = $(".stops").clone()
+     let arri = $(".arrivals").clone()
+     let stopids = null
+     stations.addEventListener("click", function() {
+        $(".routes").clear()
+       busRouteEnd = busRouteEnd + buskey + "&format=json"
+       $.get(busRouteEnd, function(res) {
+         $.each(res, function(i, v) {
+           let route = $(".line").clone()
+           route.removeClass("template")
+           route.text(res.bustime-response.routes[i].rt)
+           $(".routes").append(route)
+         })
+       })
     })
-    let lines = document.getElementsByClass("line");
-    for(let j = 0;j<lines.length;j++) {
+     let lines = document.getElementsByClass("line");
+    for(let j = 0; j < lines.length; j++) {
       lines[j].addEventListener("click", function() {
-        var target = $(this).text()
-        $(".line").clear()
-        $(".direction").clone()
-        var location = checkLine(target);
-        var directSet = new Set();
-        $.get(location, function(res) {
-          $.each(res, function(i,v) {
-            directSet.add(v.ctatt.route[i].destNm)
+        routedir.removeClass("template")
+        let target = $(this).text()
+        $(".routes").clear()
+        busDirectionEnd = busDirectionEnd + buskey + "&rt="+ target + "&format=json"
+        busStop = busStop + buskey + "&rt=" + target
+        busPred = busPred + buskey + "&rt=" + target
+        $.get(busDirectionEnd, function(res) {
+          $.each(res, function(i, v) {
+            let routedirT = routedir.clone()
+            routedirT.text(res.bustime-response.directions[i].dir)
+            $(".routes").append(routedirT)
           })
         })
       })
     }
-  </script> 
+    let directions = document.getElementsByClass("direction")
+     for(let i = 0; i < directions.length; i++) {
+      directions[i].addEventListener('click', function() {
+        var target = $(this).text()
+        $(".routes").clear()
+        stop.removeClass("template")
+        busStop = busStop + "&dir=" + target + "&format=json"
+        $.get(busStop, function(res) {
+          $.each(res, function(i, v) {
+            let stops = stop.clone()
+            stopids.push(res.bustime-response.stops[i].stpid)
+            stops.text(res.bustime-response.stops[i].stpnm)
+            $(".routes").append(stops)
+          })
+        })
+      })
+    }
+    let st = document.getElementsByClass("stops")
+    for(let i=0;i<st.length;i++) {
+      st[i].addEventListener('click', function() {
+        $(".routes").clear()
+        arri.removeClass("template")
+        busPred = busPred + "&stpid=" + stopids[i] + "&format=json"
+        $.get(busPred, function(res) {
+          $.each(res, function(i,v) {
+            actArri = arri.clone()
+            actArri.text((v.schtm - v.tmstmp) + "Min")
+            $(".routes").append(actArri)
+          })
+        })
+      })
+    }
+  </script>
 
 
 </body>
